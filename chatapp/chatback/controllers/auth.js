@@ -30,6 +30,9 @@ const handleSignin = async (req, res, bcrypt) => {
   if (!match) return res.json("Incorrect password");
   const accessToken = generateAccessToken(email);
   const refreshToken = generateRefreshToken(email);
+
+  // Check if redis did update
+
   setToken(refreshToken, email);
 
   return res.json({
@@ -45,7 +48,6 @@ const handleSignin = async (req, res, bcrypt) => {
 const handleRegister = async (req, res, bcrypt) => {
   const db = req.app.locals.db;
   let user = req.body;
-  console.log("THIS IS MYT USER REGISTER", user);
 
   const userExist = await checkIsUserExsists(db, user.email);
   if (userExist) return res.json("User exists");
@@ -83,6 +85,8 @@ const handleGoogleSignIn = async (req, res) => {
     const accessToken = generateAccessToken(email);
     const refreshToken = generateRefreshToken(email);
 
+    // Check if redis did update
+
     setToken(refreshToken, email);
     // If user exists return user data
     if (isUserExists)
@@ -94,7 +98,6 @@ const handleGoogleSignIn = async (req, res) => {
 
     // If user isnt exists create new one and return user data
     const user = { username: name, email };
-    console.log("NEW USER BABY", user);
     const userCreated = await createNewUser(db, user);
     if (userCreated.result.ok)
       return res.status(201).json({

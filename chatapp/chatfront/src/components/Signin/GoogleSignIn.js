@@ -18,9 +18,7 @@ const GoogleSignIn = ({ setError, setUserName }) => {
       setError("Error to signin with google");
     // add token
     localStorageService.setToken(googleResponse);
-
     setUserName(googleResponse.username);
-
     // get name or token
     history.push("/chat");
   };

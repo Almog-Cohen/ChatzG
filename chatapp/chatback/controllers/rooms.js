@@ -6,7 +6,7 @@ const handleGetRoomMessages = async (req, res) => {
   const database = db.db("chats");
   const chats = await database.collection(room).find({}).toArray();
   return res.json(chats);
-};
+}; 
 
 const handleIsRoomExist = async (req, res) => {
   const db = req.app.locals.db;
