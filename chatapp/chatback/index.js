@@ -17,7 +17,6 @@ let client;
 const PORT = process.env.PORT || 3001;
 
 const router = require("./router");
-const { callbackify } = require("util");
 
 const app = express();
 const server = http.createServer(app);
@@ -67,10 +66,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("rooms", () => {
-    // if (name && room) {
-    //   const user = await addUserToRoom(client, name, room);
-    //   console.log("this is user: ", user);
-    // }
     setTimeout(async () => {
       const roomsList = await getRoomsList(client);
       // Sending message to the user

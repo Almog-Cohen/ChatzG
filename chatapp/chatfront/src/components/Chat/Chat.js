@@ -22,8 +22,6 @@ const Chat = ({ roomNumber, userName }) => {
   const [message, setMessage] = useState("");
   const [{ messages }, dispatch] = useStateValue();
 
-  console.log("CHATS RENDERINGH");
-
   const addToMessages = (message) => {
     dispatch({
       type: "ADD_TO_MESSAGES",
@@ -53,7 +51,7 @@ const Chat = ({ roomNumber, userName }) => {
         const messagesData = await axios.get(
           `http://localhost:3001/chat/${roomNumber}`
         );
-        console.log("DATA CURVED", messagesData.data);
+        console.log("THIS IS MY MESSAGES", messagesData);
         messagesData.data.length > 0 && addFetchMessages(messagesData.data);
 
         socket = io(END_POINT, connectionOptions);

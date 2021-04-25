@@ -1,5 +1,3 @@
-const users = [];
-
 // Adding user to the room
 const addUserToRoom = async (client, name, room) => {
   name = name.trim().toLowerCase();

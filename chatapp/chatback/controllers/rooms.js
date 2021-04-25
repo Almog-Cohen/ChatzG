@@ -14,7 +14,6 @@ const handleIsRoomExist = async (req, res) => {
 
   const database = db.db("rooms");
   const rooms = await database.listCollections({ name: room }).toArray();
-
   return res.json(rooms.length > 0);
 };
 

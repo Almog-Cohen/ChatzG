@@ -6,16 +6,19 @@ import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
 import { authenticate } from "../../utils/apiClient";
+import LocalStorageService from "../../utils/LocalStorageService";
 
-import "./SignIn.css";
 import { validatePassword, validateEmail } from "../../utils/formValidation";
+import GoogleSignIn from "./GoogleSignIn";
 
 const INCRORRENT_PASSWORD = "Incorrect password";
 const USER_NOT_EXSISTS = "User not exists";
+const LOGIN_WITH_GOOGLE = "Please signin with your google account";
+
+const localStorageService = LocalStorageService.getService();
 
 const SignIn = ({ setUserName }) => {
   const history = useHistory();
-
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,6 +43,7 @@ const SignIn = ({ setUserName }) => {
     setIsLoading(true);
     const userAuth = await authenticate(values);
     setIsLoading(false);
+    console.log("SIGN IN TEST", userAuth);
 
     switch (userAuth) {
       case USER_NOT_EXSISTS:
@@ -51,11 +55,17 @@ const SignIn = ({ setUserName }) => {
 
         break;
 
+      case LOGIN_WITH_GOOGLE:
+        setError(LOGIN_WITH_GOOGLE);
+        break;
+
       default:
         // if user and password correct
 
         // add token
-        setUserName(userAuth);
+        localStorageService.setToken(userAuth);
+
+        setUserName(userAuth.username);
 
         // get name or token
         history.push("/chat");
@@ -69,7 +79,7 @@ const SignIn = ({ setUserName }) => {
           <div className="card-content">
             <div className="card-input">
               <TextField
-                error={formik.errors.email}
+                error={!!formik.errors.email}
                 helperText={formik.errors.email}
                 fullWidth={true}
                 required
@@ -84,7 +94,7 @@ const SignIn = ({ setUserName }) => {
             <div className="card-input">
               <TextField
                 required
-                error={formik.errors.password}
+                error={!!formik.errors.password}
                 helperText={formik.errors.password}
                 fullWidth={true}
                 label="Password"
@@ -100,6 +110,9 @@ const SignIn = ({ setUserName }) => {
                 {error}
               </p>
             )}
+
+            <GoogleSignIn setError={setError} setUserName={setUserName} />
+
             <div className="card-input">
               {isLoading ? (
                 <CircularProgress color="secondary" />
