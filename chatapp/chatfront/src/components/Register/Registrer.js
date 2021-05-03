@@ -30,7 +30,7 @@ const Register = ({ setUserName }) => {
       password: "",
     },
     validate: (values) => {
-      // returns error object, if empty then there are not errors and the form is valid
+      // returns error object, if empty then there are not errors and the form is valid.
       return {
         ...validateUserName(values.username),
         ...validateEmail(values.email),
@@ -41,7 +41,7 @@ const Register = ({ setUserName }) => {
       onSubmitRegister(values);
     },
   });
-
+  // Register the client return error if the user exists, else store tokens and user name from the server.
   const onSubmitRegister = async (values) => {
     setIsLoading(true);
     const response = await register(values);

@@ -1,82 +1,48 @@
 export const initialState = {
   messages: [],
   roomName: "",
+  previewSource: "",
 };
 
-//Selector
-// export const getBasketTotalPrice = (basket,copun) =>
-//   basket?.reduce((accu, basketItem) => accu + basketItem.price, 0);
-
-// Add items by action
 const reducer = (state, action) => {
   switch (action.type) {
+    // Add new messages to messages collection
     case "ADD_TO_MESSAGES":
       return {
         ...state,
         messages: [...state.messages, action.message],
       };
-
+    // Fetch messages from the server
     case "ADD_FETCH_MESSAGES":
       return {
         ...state,
         messages: action.message,
       };
-
+    // Clear all messages in the chat board
     case "CLEAR_MESSAGES":
       return {
         ...state,
         messages: [],
       };
-
+    // Change user room
     case "CHANGE_USER_ROOM":
-      console.log("USERROOM", action.roomName);
       return {
         ...state,
         roomName: action.roomName,
       };
+    // Set preview source
+    case "ADD_PREVIEW_SOURCE":
+      return {
+        ...state,
+        previewSource: action.previewSource,
+      };
 
-    // // Remove item by action
-    // case "REMOVE_FROM_BASKET":
-    //   const index = state.basket.findIndex(
-    //     (basketItem) => basketItem.id === action.id
-    //   );
-
-    //   let newBasket = [...state.basket];
-    //   if (index >= 0) {
-    //     newBasket.splice(index, 1);
-    //   } else {
-    //     console.log("There is no product id");
-    //   }
-    //   return {
-    //     ...state,
-    //     basket: newBasket,
-    //   };
-
-    // // Clear basket list
-    // case "EMPTY_BASKET":
-    //   return {
-    //     ...state,
-    //     basket: [],
-    //   };
-
-    // case "ADD_COPUN":
-    //   return {
-    //     ...state,
-    //     copun: action.copun,
-    //   };
-
-    // case "SEARCH_ITEM":
-    //   return {
-    //     ...state,
-    //     searchText: action.searchText,
-    //   };
-
-    // // Setting user with firebase auth
-    // case "SET_USER":
-    //   return {
-    //     ...state,
-    //     user: action.user,
-    //   };
+    // Clear preview source
+    case "CLEAR_PREVIEW_SOURCE":
+      return {
+        ...state,
+        previewSource: "",
+      };
 
     default:
       return state;

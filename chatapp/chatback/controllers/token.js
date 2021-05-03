@@ -20,20 +20,23 @@ const handleDeleteToken = (req, res) => {
 // Otherwise return new resfresh and access tokens
 const handleGenerateNewTokens = async (req, res) => {
   const { refreshToken } = req.body;
-  if (refreshToken == null) return res.sendStatus(401);
-  console.log("THIS IS VALID REFRESH0", refreshToken);
-  const refreshTokenExists = await checkRefreshTokenExists(refreshToken);
-  console.log("REFRESH TOKEN EXISTS? ", refreshTokenExists);
-  if (!refreshTokenExists) return res.sendStatus(403);
-  deleteRefreshToken(refreshToken);
-  const newAccessToken = generateAccessToken(refreshTokenExists);
-  const newRefreshToken = generateRefreshToken(refreshTokenExists);
-  setToken(newRefreshToken, refreshTokenExists);
+  try {
+    if (refreshToken == null) return res.sendStatus(401);
+    const refreshTokenExists = await checkRefreshTokenExists(refreshToken);
+    if (!refreshTokenExists) return res.sendStatus(403);
+    deleteRefreshToken(refreshToken);
+    const newAccessToken = generateAccessToken(refreshTokenExists);
+    const newRefreshToken = generateRefreshToken(refreshTokenExists);
+    setToken(newRefreshToken, refreshTokenExists);
 
-  return res.status(201).json({
-    accessToken: newAccessToken,
-    refreshToken: newRefreshToken,
-  });
+    return res.status(201).json({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
 };
 
 // Cheking for token
@@ -67,12 +70,6 @@ const checkRefreshTokenExists = (refreshToken) => {
 // Delete the refresh token from redis db
 const deleteRefreshToken = (refreshToken) => {
   redisClient.del(refreshToken, (err, response) => {
-    // if (response == 1) {
-    //   console.log("Deleted Successfully!");
-    // } else {
-    //   console.log("Cannot delete");
-    // }
-
     response
       ? console.log("Deleted Successfully!")
       : console.log("Cannot delete");

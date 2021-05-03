@@ -10,16 +10,14 @@ const localStorageService = LocalStorageService.getService();
 
 const GoogleSignIn = ({ setError, setUserName }) => {
   const history = useHistory();
-
+  // Get google reponse from the server
   const responseGoogle = async (response) => {
     const googleResponse = await authenticateGoogle(response);
-    console.log(googleResponse);
     if (typeof googleResponse.username != "undefined")
       setError("Error to signin with google");
-    // add token
+    // add tokens to local storage
     localStorageService.setToken(googleResponse);
     setUserName(googleResponse.username);
-    // get name or token
     history.push("/chat");
   };
 

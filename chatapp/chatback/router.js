@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-
+const uploadImage = require("./controllers/uploadImage");
 const rooms = require("./controllers/rooms");
 const valiadte = require("./controllers/validation");
 const auth = require("./controllers/auth");
@@ -38,6 +38,10 @@ router.get("/chat/:room", token.tokenValidation, (req, res) => {
 
 router.get("/isroomexist/:room", token.tokenValidation, (req, res) => {
   rooms.handleIsRoomExist(req, res);
+});
+
+router.post("/api/upload", token.tokenValidation, (req, res) => {
+  uploadImage.handleUploadImage(req, res);
 });
 
 module.exports = router;

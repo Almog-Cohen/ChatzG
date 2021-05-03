@@ -7,7 +7,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
 import { authenticate } from "../../utils/apiClient";
 import LocalStorageService from "../../utils/LocalStorageService";
-
 import { validatePassword, validateEmail } from "../../utils/formValidation";
 import GoogleSignIn from "./GoogleSignIn";
 
@@ -43,31 +42,25 @@ const SignIn = ({ setUserName }) => {
     setIsLoading(true);
     const userAuth = await authenticate(values);
     setIsLoading(false);
-    console.log("SIGN IN TEST", userAuth);
-
+    // Check if there is error messages
     switch (userAuth) {
       case USER_NOT_EXSISTS:
         setError(USER_NOT_EXSISTS);
-
         break;
+
       case INCRORRENT_PASSWORD:
         setError(INCRORRENT_PASSWORD);
-
         break;
 
       case LOGIN_WITH_GOOGLE:
         setError(LOGIN_WITH_GOOGLE);
         break;
 
+      // Stores tokens and username and change to chat page
       default:
-        // if user and password correct
-
-        // add token
+        // set tokens in the local storage
         localStorageService.setToken(userAuth);
-
         setUserName(userAuth.username);
-
-        // get name or token
         history.push("/chat");
     }
   };

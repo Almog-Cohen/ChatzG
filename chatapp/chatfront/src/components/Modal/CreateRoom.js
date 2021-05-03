@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { validateRoomName } from "../../utils/formValidation";
+import { validateRoomName, validteFileType } from "../../utils/formValidation";
 import { useFormik } from "formik";
-import { isRoomExists } from "../../utils/apiClient";
+import { useStateValue } from "../../StateProvider";
+import { isRoomExists, uploadImages } from "../../utils/apiClient";
+import "./CreateRoom.css";
+
+const ROOM_EXISTS = "The rome name is taken please chose another";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -32,36 +36,68 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateRoom = ({ setRoomNumber, createNewRoom, setOpenModal }) => {
+const CreateRoom = ({ setRoomName, createNewRoom, setOpenModal }) => {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
+  const [previewSource64Encoded, setPreviewSource64Encoded] = useState("");
   const [error, setError] = useState("");
+
+  const [state, dispatch] = useStateValue();
+
+  // Convert the image to 64encoded
+  const previweFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setPreviewSource64Encoded(reader.result);
+    };
+  };
+
+  // Set preview source of the image.
+  const setPreviewSource = (previewSource) => {
+    dispatch({
+      type: "ADD_PREVIEW_SOURCE",
+      previewSource: previewSource,
+    });
+  };
 
   const formik = useFormik({
     initialValues: {
       roomName: "",
+      file: "",
     },
     validate: (values) => {
       // returns error object, if empty then there are not errors and the form is valid
+
+      const newFile = {
+        fileName: values.file.name,
+        type: values.file.type,
+        size: `${values.file.size}`,
+      };
+
       return {
         ...validateRoomName(values.roomName),
+        ...validteFileType(newFile),
       };
     },
     onSubmit: async (values) => {
       const roomExists = await isRoomExists(values.roomName);
-
-      console.log(roomExists);
+      // If room exists show error else create new room
       if (roomExists) {
-        setError("The rome name is taken please chose another");
+        setError(ROOM_EXISTS);
       } else {
+        //upload image to the server
+        if (previewSource64Encoded) {
+          const response = await uploadImages(previewSource64Encoded);
+          setPreviewSource(response);
+        }
         createNewRoom();
-        setRoomNumber(values.roomName);
+        setRoomName(values.roomName);
         setOpenModal(false);
       }
     },
   });
 
-  console.log("CHECK ERROR", error);
   return (
     <div style={modalStyle} className={classes.paper}>
       <form onSubmit={formik.handleSubmit}>
@@ -76,6 +112,36 @@ const CreateRoom = ({ setRoomNumber, createNewRoom, setOpenModal }) => {
           onChange={formik.handleChange}
           value={formik.values.roomName}
         />
+
+        <input
+          className="choose"
+          fullWidth={true}
+          required
+          id="file"
+          name="file"
+          label="file"
+          type="file"
+          onChange={(event) => {
+            formik.setFieldValue("file", event.target.files[0]);
+            previweFile(event.target.files[0]);
+          }}
+        />
+        <TextField
+          error={formik.errors.file}
+          helperText={formik.errors.file}
+          fullWidth={true}
+          disabled
+          required
+        />
+
+        {previewSource64Encoded && (
+          <img
+            src={previewSource64Encoded}
+            alt="chosen"
+            style={{ height: "300px", width: "300px" }}
+          />
+        )}
+
         <Button
           type="submit"
           color="primary"

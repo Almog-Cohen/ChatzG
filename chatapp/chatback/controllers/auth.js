@@ -19,27 +19,32 @@ redisClient.on("connect", function (error) {
 const handleSignin = async (req, res, bcrypt) => {
   const { email, password } = req.body;
   const db = req.app.locals.db;
-  const userExist = await checkIsUserExsists(db, email);
+  try {
+    const userExist = await checkIsUserExsists(db, email);
 
-  if (!userExist) return res.json("User not exists");
-  // Check if the user registered with google account
-  if (typeof userExist.password == "undefined")
-    return res.json("Please signin with your google account");
+    if (!userExist) return res.json("User not exists");
+    // Check if the user registered with google account
+    if (typeof userExist.password == "undefined")
+      return res.json("Please signin with your google account");
 
-  const match = await bcrypt.compare(password, userExist.password);
-  if (!match) return res.json("Incorrect password");
-  const accessToken = generateAccessToken(email);
-  const refreshToken = generateRefreshToken(email);
+    const match = await bcrypt.compare(password, userExist.password);
+    if (!match) return res.json("Incorrect password");
+    const accessToken = generateAccessToken(email);
+    const refreshToken = generateRefreshToken(email);
 
-  // Check if redis did update
+    // Check if redis did update
 
-  setToken(refreshToken, email);
+    setToken(refreshToken, email);
 
-  return res.json({
-    username: userExist.username,
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-  });
+    return res.json({
+      username: userExist.username,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
 };
 
 // Fuction that register a user to our db
@@ -48,23 +53,27 @@ const handleSignin = async (req, res, bcrypt) => {
 const handleRegister = async (req, res, bcrypt) => {
   const db = req.app.locals.db;
   let user = req.body;
+  try {
+    const userExist = await checkIsUserExsists(db, user.email);
+    if (userExist) return res.json("User exists");
 
-  const userExist = await checkIsUserExsists(db, user.email);
-  if (userExist) return res.json("User exists");
-
-  const saltRounds = 10;
-  // Hashing user password and updating
-  user.password = bcrypt.hashSync(user.password, saltRounds);
-  const accessToken = generateAccessToken(user.email);
-  const refreshToken = generateRefreshToken(user.email);
-  const userCreated = await createNewUser(db, user);
-  if (!userCreated.result.ok) return res.json(500);
-  setToken(refreshToken, user.email);
-  return res.status(201).json({
-    username: user.username,
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-  });
+    const saltRounds = 10;
+    // Hashing user password and updating
+    user.password = bcrypt.hashSync(user.password, saltRounds);
+    const accessToken = generateAccessToken(user.email);
+    const refreshToken = generateRefreshToken(user.email);
+    const userCreated = await createNewUser(db, user);
+    if (!userCreated.result.ok) return res.json(500);
+    setToken(refreshToken, user.email);
+    return res.status(201).json({
+      username: user.username,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
 };
 // Login with google account.
 // The function check if the google account is valid and return user data(nes tokens).
