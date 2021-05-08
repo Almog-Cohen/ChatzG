@@ -1,6 +1,6 @@
 // Adding user to the room if the room is not exists create new room with image
 const addUserToRoom = async (client, name, room, imageUrl = null) => {
-  name = name.trim().toLowerCase();
+  // name = name.trim().toLowerCase();
 
   const database = client.db("rooms");
   try {
@@ -48,7 +48,7 @@ const isUserExsists = async (db, email) => {
 // Remove user from the room
 const removeUserFromRoom = async (client, name, room) => {
   try {
-    name = name.trim().toLowerCase();
+    // name = name.trim().toLowerCase();
     const database = client.db("rooms");
     const chats = await database
       .collection(room)
@@ -94,3 +94,20 @@ module.exports = {
   getRoomsList,
   isUserExsists,
 };
+
+// class dataBase {
+//   constructor() {
+//     self.data = {
+//       rooms: [],
+//     };
+//     self.data["rooms"][0] = "room1";
+//     self.data["rooms"][1] = "room2";
+//   }
+
+//   db(params) {
+//     return self.data[params];
+//   }
+//   collection(room) {
+//     return rooms;
+//   }
+// }

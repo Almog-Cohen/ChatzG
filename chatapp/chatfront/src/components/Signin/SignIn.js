@@ -40,28 +40,33 @@ const SignIn = ({ setUserName }) => {
 
   const onSubmitSignIn = async (values) => {
     setIsLoading(true);
-    const userAuth = await authenticate(values);
-    setIsLoading(false);
-    // Check if there is error messages
-    switch (userAuth) {
-      case USER_NOT_EXSISTS:
-        setError(USER_NOT_EXSISTS);
-        break;
+    try {
+      const userAuth = await authenticate(values);
+      setIsLoading(false);
+      // Check if there is error messages
+      switch (userAuth) {
+        case USER_NOT_EXSISTS:
+          setError(USER_NOT_EXSISTS);
+          break;
 
-      case INCRORRENT_PASSWORD:
-        setError(INCRORRENT_PASSWORD);
-        break;
+        case INCRORRENT_PASSWORD:
+          setError(INCRORRENT_PASSWORD);
+          break;
 
-      case LOGIN_WITH_GOOGLE:
-        setError(LOGIN_WITH_GOOGLE);
-        break;
+        case LOGIN_WITH_GOOGLE:
+          setError(LOGIN_WITH_GOOGLE);
+          break;
 
-      // Stores tokens and username and change to chat page
-      default:
-        // set tokens in the local storage
-        localStorageService.setToken(userAuth);
-        setUserName(userAuth.username);
-        history.push("/chat");
+        // Stores tokens and username and change to chat page
+        default:
+          // set tokens in the local storage
+          localStorageService.setToken(userAuth);
+          setUserName(userAuth.username);
+          history.push("/chat");
+      }
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
     }
   };
 

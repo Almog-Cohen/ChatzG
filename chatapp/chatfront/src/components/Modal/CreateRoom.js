@@ -81,19 +81,23 @@ const CreateRoom = ({ setRoomName, createNewRoom, setOpenModal }) => {
       };
     },
     onSubmit: async (values) => {
-      const roomExists = await isRoomExists(values.roomName);
-      // If room exists show error else create new room
-      if (roomExists) {
-        setError(ROOM_EXISTS);
-      } else {
-        //upload image to the server
-        if (previewSource64Encoded) {
-          const response = await uploadImages(previewSource64Encoded);
-          setPreviewSource(response);
+      try {
+        const roomExists = await isRoomExists(values.roomName);
+        // If room exists show error else create new room
+        if (roomExists) {
+          setError(ROOM_EXISTS);
+        } else {
+          //upload image to the server
+          if (previewSource64Encoded) {
+            const response = await uploadImages(previewSource64Encoded);
+            setPreviewSource(response);
+          }
+          createNewRoom();
+          setRoomName(values.roomName);
+          setOpenModal(false);
         }
-        createNewRoom();
-        setRoomName(values.roomName);
-        setOpenModal(false);
+      } catch (error) {
+        console.log(error);
       }
     },
   });
@@ -102,7 +106,7 @@ const CreateRoom = ({ setRoomName, createNewRoom, setOpenModal }) => {
     <div style={modalStyle} className={classes.paper}>
       <form onSubmit={formik.handleSubmit}>
         <TextField
-          error={formik.errors.roomName}
+          error={!!formik.errors.roomName}
           helperText={formik.errors.roomName}
           fullWidth={true}
           required

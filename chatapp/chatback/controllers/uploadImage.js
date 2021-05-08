@@ -9,10 +9,9 @@ const handleUploadImage = async (req, res) => {
         upload_preset: "dev_setups",
       }
     );
-    console.log("image uploaded", uploadedResponse.public_id);
     res.json(uploadedResponse.public_id);
   } catch (error) {
-    console.log("IMAGE ERROR", error);
+    console.log(error);
     res.status(500).json({ err: "Somthing get worng" });
   }
 };

@@ -44,14 +44,19 @@ const Register = ({ setUserName }) => {
   // Register the client return error if the user exists, else store tokens and user name from the server.
   const onSubmitRegister = async (values) => {
     setIsLoading(true);
-    const response = await register(values);
-    setIsLoading(false);
-    if (response === USER_EXISTS) setError(response);
+    try {
+      const response = await register(values);
+      setIsLoading(false);
+      if (response === USER_EXISTS) setError(response);
 
-    if (typeof response.username != "undefined") {
-      localStorageService.setToken(response);
-      setUserName(response.username);
-      history.push("/chat");
+      if (typeof response.username != "undefined") {
+        localStorageService.setToken(response);
+        setUserName(response.username);
+        history.push("/chat");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
     }
   };
 

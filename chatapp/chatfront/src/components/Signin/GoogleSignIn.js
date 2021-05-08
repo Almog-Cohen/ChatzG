@@ -12,13 +12,17 @@ const GoogleSignIn = ({ setError, setUserName }) => {
   const history = useHistory();
   // Get google reponse from the server
   const responseGoogle = async (response) => {
-    const googleResponse = await authenticateGoogle(response);
-    if (typeof googleResponse.username != "undefined")
-      setError("Error to signin with google");
-    // add tokens to local storage
-    localStorageService.setToken(googleResponse);
-    setUserName(googleResponse.username);
-    history.push("/chat");
+    try {
+      const googleResponse = await authenticateGoogle(response);
+      if (typeof googleResponse.username != "undefined")
+        setError("Error to signin with google");
+      // add tokens to local storage
+      localStorageService.setToken(googleResponse);
+      setUserName(googleResponse.username);
+      history.push("/chat");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

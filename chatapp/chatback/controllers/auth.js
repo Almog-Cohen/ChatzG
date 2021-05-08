@@ -26,7 +26,7 @@ const handleSignin = async (req, res, bcrypt) => {
     // Check if the user registered with google account
     if (typeof userExist.password == "undefined")
       return res.json("Please signin with your google account");
-
+    console.log(userExist);
     const match = await bcrypt.compare(password, userExist.password);
     if (!match) return res.json("Incorrect password");
     const accessToken = generateAccessToken(email);
@@ -43,6 +43,19 @@ const handleSignin = async (req, res, bcrypt) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(500);
+  }
+};
+
+//
+
+const handleGetUserName = async (req, res) => {
+  const db = req.app.locals.db;
+  const { email } = req.email;
+  try {
+    const { username } = await checkIsUserExsists(db, email);
+    username ? res.json(username) : res.sendStatus(403);
+  } catch (error) {
     res.status(500);
   }
 };
@@ -156,6 +169,7 @@ module.exports = {
   redisClient: redisClient,
   handleRegister: handleRegister,
   handleGoogleSignIn: handleGoogleSignIn,
+  handleGetUserName: handleGetUserName,
   setToken: setToken,
   generateRefreshToken,
   generateAccessToken,

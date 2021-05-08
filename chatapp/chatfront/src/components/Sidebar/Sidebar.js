@@ -3,11 +3,16 @@ import "./Sidebar.css";
 import CreateRoom from "../Modal/CreateRoom";
 import SidebarChat from "./SidebarChat";
 import { Avatar } from "@material-ui/core";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import Modal from "@material-ui/core/Modal";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import IconButton from "@material-ui/core/IconButton";
 import io from "socket.io-client";
+import { deleteRefreshToken } from "../../utils/apiClient";
+import LocalStorageService from "../../utils/LocalStorageService";
+
+const localStorageService = LocalStorageService.getService();
 
 const styles = {
   width: "100%",
@@ -30,6 +35,21 @@ const Sidebar = ({ setRoomName }) => {
   const setModal = (e) => {
     e.preventDefault();
     setOpenModal((state) => !state);
+  };
+
+  const logoutFromApp = async (e) => {
+    e.preventDefault();
+    const refreshToken = localStorageService.getRefreshToken();
+    try {
+      const response = await deleteRefreshToken(refreshToken);
+      console.log(response);
+      if (response === "logout") {
+        localStorageService.clearToken();
+        window.location = "/login";
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Socket send the server that new room has created
@@ -55,6 +75,9 @@ const Sidebar = ({ setRoomName }) => {
     <div className="side-bar">
       <div className="side-bar-header">
         <Avatar />
+        <ButtonBase onClick={logoutFromApp}>
+          <ExitToAppIcon color="primary" fontSize="large" />
+        </ButtonBase>
         <div className="side-bar-headerRight"></div>
       </div>
       <div className="side-bar-search">
@@ -67,7 +90,11 @@ const Sidebar = ({ setRoomName }) => {
 
       <div className="side-bar-chats">
         {roomsList?.map((room) => (
-          <ButtonBase style={styles} onClick={() => setRoomName(room.roomName)}>
+          <ButtonBase
+            key={room.roomName}
+            style={styles}
+            onClick={() => setRoomName(room.roomName)}
+          >
             <SidebarChat roomName={room.roomName} roomImage={room.imageUrl} />
           </ButtonBase>
         ))}

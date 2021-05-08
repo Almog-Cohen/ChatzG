@@ -25,7 +25,7 @@ const Chat = ({ roomName, userName }) => {
 
   // Clear the image url
 
-  const clearPreviewSource = (previewSource) => {
+  const clearPreviewSource = () => {
     dispatch({
       type: "CLEAR_PREVIEW_SOURCE",
       previewSource: "",
@@ -54,8 +54,6 @@ const Chat = ({ roomName, userName }) => {
       message: message,
     });
   };
-
-  const [userExsits, setUserExists] = useState(true);
 
   // Load all messages and connect the sockets.
   useEffect(() => {
@@ -97,7 +95,7 @@ const Chat = ({ roomName, userName }) => {
       socket.disconnect();
 
       if (previewSource) {
-        clearPreviewSource(previewSource);
+        clearPreviewSource();
       }
       clearMessages();
     };
@@ -118,6 +116,13 @@ const Chat = ({ roomName, userName }) => {
         () => setMessage("")
       );
     }
+  };
+
+  // Print users names
+  const printUsersNamesArray = (users) => {
+    return users.map((user, i) =>
+      i !== users.length - 1 ? ` ${user.name},` : ` ${user.name}`
+    );
   };
 
   // Formating the messages date and time
@@ -158,7 +163,7 @@ const Chat = ({ roomName, userName }) => {
 
         <div className="chat-header-info">
           <h3>Room {roomName}</h3>
-          {users && users.map((user) => ` ,${user.name}`)}
+          {users && printUsersNamesArray(users)}
         </div>
       </div>
 
@@ -178,11 +183,6 @@ const Chat = ({ roomName, userName }) => {
               </span>
             </p>
           ))}
-        {!userExsits && (
-          <p>
-            Welcome {userName} to room {roomName}
-          </p>
-        )}
       </div>
 
       <div className="chat-footer">

@@ -11,7 +11,7 @@ const {
 // Delete the refresh token in redis when logout
 const handleDeleteToken = (req, res) => {
   deleteRefreshToken(req.body.refreshToken);
-  return res.status(204);
+  return res.json("logout");
 };
 
 // Check for valid refresh token
@@ -22,13 +22,13 @@ const handleGenerateNewTokens = async (req, res) => {
   const { refreshToken } = req.body;
   try {
     if (refreshToken == null) return res.sendStatus(401);
+
     const refreshTokenExists = await checkRefreshTokenExists(refreshToken);
     if (!refreshTokenExists) return res.sendStatus(403);
     deleteRefreshToken(refreshToken);
     const newAccessToken = generateAccessToken(refreshTokenExists);
     const newRefreshToken = generateRefreshToken(refreshTokenExists);
     setToken(newRefreshToken, refreshTokenExists);
-
     return res.status(201).json({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
@@ -44,11 +44,11 @@ const tokenValidation = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   // Get token or undfiend if its not exists
   const token = authHeader && authHeader.split(" ")[1];
+
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, email) => {
     if (err) return res.sendStatus(401);
     req.email = email;
-
     next();
   });
 };
