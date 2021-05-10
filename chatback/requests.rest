@@ -1,0 +1,55 @@
+POST  http://localhost:3001/signin
+Content-Type: application/json
+
+{
+    "email":"almogco94@gmail.com",
+    "password":"4268542685aA"
+}
+
+###
+
+
+
+GET  http://localhost:3001/isroomexist?room=mogo
+Content-Type: application/json
+
+
+
+
+
+POST  http://localhost:3001/register
+Content-Type: application/json
+
+{
+    "email":"almogancoaaaaaaa94@gmail.com",
+    "password":"4268542685aA",
+     "username": "mogon"
+}
+
+###
+
+POST   http://localhost:3001/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsbW9nY285NEBnbWFpbC5jb20iLCJpYXQiOjE2MTg2OTYyOTV9.SwRuc-e-bzb5gbXGZ_CpuzzLYlnxiIJvg493Ymjf6aM"
+}
+
+
+
+###
+
+DELETE  http://localhost:3001/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsbW9nY285NEBnbWFpbC5jb20iLCJpYXQiOjE2MTg2OTY3OTl9.Z-ct_Pj-RlelSH8xgKJA_F2_SbUplrlymJnIG4X4obU"
+}
+
+
+
+
+###
+
+GET   http://localhost:3001/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsbW9nY285NEBnbWFpbC5jb20iLCJpYXQiOjE2MTg2Njk1MTAsImV4cCI6MTYxODY2OTU1MH0.KTYIyN3pwEXLwgzPteZVFG-iuKgvrMXo97FTknBQtFk

@@ -3,6 +3,8 @@ import InsertEmoticon from "@material-ui/icons/InsertEmoticon";
 import MicIcon from "@material-ui/icons/Mic";
 import "./Chat.css";
 import io from "socket.io-client";
+import IconButton from "@material-ui/core/IconButton";
+import SendIcon from "@material-ui/icons/Send";
 import { Image } from "cloudinary-react";
 import { useStateValue } from "../../StateProvider";
 import { getRoomMessages } from "../../utils/apiClient";
@@ -101,6 +103,14 @@ const Chat = ({ roomName, userName }) => {
     };
   }, [roomName]);
 
+  useEffect(() => {
+    // If user refresh the page, close browser remove him from the room and close his socket to the room
+    window.onbeforeunload = (e) => {
+      socket.emit("disconnected", { name: userName, room: roomName });
+      socket.disconnect();
+    };
+  }, []);
+
   // Send message with socket over the backend.
   const sendMessage = (event) => {
     event.preventDefault();
@@ -162,7 +172,7 @@ const Chat = ({ roomName, userName }) => {
         )}
 
         <div className="chat-header-info">
-          <h3>Room {roomName}</h3>
+          <h3>{roomName}</h3>
           {users && printUsersNamesArray(users)}
         </div>
       </div>
@@ -194,10 +204,12 @@ const Chat = ({ roomName, userName }) => {
             placeholder="Type a message"
             type="text"
           />
-          <button onClick={sendMessage} type="submit">
-            Send message
-          </button>
         </form>
+        {message && (
+          <IconButton onClick={sendMessage}>
+            <SendIcon color="primary" fontSize="small" />
+          </IconButton>
+        )}
         <MicIcon />
       </div>
     </div>
