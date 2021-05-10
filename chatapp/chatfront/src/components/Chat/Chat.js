@@ -158,6 +158,10 @@ const Chat = ({ roomName, userName }) => {
     return userName === messageName;
   };
 
+  const submitHandler = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="chat">
       <div className="chat-header">
@@ -197,7 +201,7 @@ const Chat = ({ roomName, userName }) => {
 
       <div className="chat-footer">
         <InsertEmoticon />
-        <form>
+        <form onSubmit={submitHandler}>
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
